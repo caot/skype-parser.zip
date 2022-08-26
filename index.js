@@ -3,6 +3,20 @@
     function c(e) {
         return e.displayName ? u(e.displayName) : p(e.id)
     }
+
+    // function exist(urlToFile) {
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('HEAD', urlToFile, false);
+    //     xhr.send();
+
+    //     return xhr.status != "404";
+    // }
+
+    // const exist = file =>
+    //     fetch(file, {method: 'HEAD', cache: 'no-store'})
+    //     .then(response => ({200: true, 404: false})[response.status])
+    //     .catch(e => undefined);
+
     function m(e) {
         e.preventDefault();
         var t = parseInt(e.target.getAttribute("data-conv"), 10)
@@ -28,10 +42,12 @@
                 var u_content = u(a[s].content);
                 var d = document.createElement("div");
                 d.className = "message-body";
-                if (typeof u_content == 'string') {
+                if (!u_content) {
+                    ; // pass
+                } else if (typeof u_content == 'string') {
                     d.innerText = u_content;
                 } else {
-                    r.appendChild(u_content);    
+                    r.appendChild(u_content);
                 }
                 r.appendChild(d);
                 n.appendChild(r)
@@ -46,24 +62,24 @@
     function u(e) {
         var data = e.replace(/&apos;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
         if (data.startsWith('<URIObject uri')) {
-            var URIObject = (new DOMParser).parseFromString(e, "text/html").querySelector('[doc_id]');
-            // doc_id = (new DOMParser).parseFromString(e, "text/html").querySelector('[doc_id]').getAttribute('doc_id');
+            var el = (new DOMParser).parseFromString(e, "text/html");
+            var URIObject = el.querySelector('[doc_id]');
             var doc_id = URIObject.getAttribute('doc_id');
-            var image = doc_id + '.1.png'
+            var OriginalName_ext = el.querySelector('OriginalName').getAttribute('v').split(".").at(-1);
+
+            if (["mp4", "m4a"].includes(OriginalName_ext.toLowerCase()))
+                return null;
+
             var width = URIObject.getAttribute('width');
             var height = URIObject.getAttribute('height');
-            (new DOMParser).parseFromString(e, "text/html").querySelector('[doc_id]').getAttribute('width');
-
-            // var img = "<img src='" + image + "' width='" + width + "' height='" + height + "'>";
 
             var img = document.createElement("img");
-            img.setAttribute("src", '../8 live .cid.930f95666ffeb1cb_export/media/' + image);
+            img.setAttribute("src", '../8 live .cid.930f95666ffeb1cb_export/media/' + doc_id + '.1.' + OriginalName_ext);
             img.setAttribute("width", width/2);
             img.setAttribute("height", height/2);
 
             return img;
         }
-        console.log(data);
 
         return data;
     }
